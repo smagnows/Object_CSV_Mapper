@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Reflection;
 using System.Collections.Generic;
+using System.IO;
 class Programe{
 
 	public static void Main(string[] args)
@@ -26,7 +27,7 @@ class Programe{
                 Console.WriteLine($"Public field value: {fieldValue}");
 
                 // Ustawienie nowej wartości pola
-                infoOPolu.SetValue(a, "imionko");
+                infoOPolu.SetValue(a, "imie3");
                 Console.WriteLine
                 ($"Public field value after change: {a.imie}");
                  // Sprawdzenie, czy się zmieniło
@@ -38,7 +39,7 @@ class Programe{
 		
 		
 		Console.WriteLine("");
-		saveasCSV(infoOPolu);
+		//saveasCSV(infoOPolu);
 		saveasCSV(a);
 		Console.WriteLine("");
 		Console.WriteLine("");
@@ -100,29 +101,48 @@ class Programe{
 	public static void saveasCSV<T>(T objekt)
 	{
 		Console.WriteLine("Zapis się wykonuje. Save As CSV");
+		StreamWriter s = new StreamWriter("klasa.csv", false);
+		
 		Type objectType = objekt.GetType();
-		Console.WriteLine(objectType);
-		Console.WriteLine(objectType.Name);
-		Console.WriteLine(objectType.FullName);
+		s.WriteLine(objectType);
+		s.WriteLine(objectType.Name);
+		s.WriteLine(objectType.FullName);
 		MemberInfo[] lista = objectType.GetMembers();
 		//Console.WriteLine(lista);
 		foreach (MemberInfo i in lista)
 		{
 			//Console.WriteLine
-			Console.WriteLine($"Nazwa\t{i.Name}");
-			Console.WriteLine($"Typ\t{i.MemberType}");
 			
 			if (i.MemberType==MemberTypes.Method)
-                    {
-                        foreach ( ParameterInfo pi in ((MethodInfo) i).GetParameters() )
-                        {
-                           Console.WriteLine($"Parameter: Type={pi.ParameterType}, Name={pi.Name}");
-                        }
-                    }
+            {
+				/*foreach ( ParameterInfo pi in ((MethodInfo) i).GetParameters() )
+				{
+				   s.WriteLine($"Parameter: Type={pi.ParameterType}, Name={pi.Name}");
+				}*/
+				s.WriteLine($"\nMetoda {i.Name}");
+				ParameterInfo[] lista2 = objectType.GetMethod(i.Name).GetParameters();
+				s.WriteLine("ListaParametrów");
+				foreach (ParameterInfo p in lista2)
+        {
+            s.Write(p.ParameterType+ ", ");
+        }
+				s.WriteLine('\n');
+            } else {
+			s.WriteLine($"Nazwa\t{i.Name}");
+			s.WriteLine($"Typ\t{i.MemberType}");
+		}
+			
 			//https://learn.microsoft.com/pl-pl/dotnet/api/system.reflection.memberinfo?view=net-9.0
 		}
-		
+		s.Close();
 		Console.WriteLine("Koniec Save as CSV\n");
 	}
+	
+	
+	public static void refleksjeTest<T>(T a)
+	{
+		
+		
+	} 
 	
 };
