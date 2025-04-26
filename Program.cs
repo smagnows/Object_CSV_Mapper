@@ -104,32 +104,38 @@ class Programe{
 		StreamWriter s = new StreamWriter("klasa.csv", false);
 		
 		Type objectType = objekt.GetType();
-		s.WriteLine(objectType);
-		s.WriteLine(objectType.Name);
-		s.WriteLine(objectType.FullName);
+		s.WriteLine("0;"+objectType+objectType.Name);
 		MemberInfo[] lista = objectType.GetMembers();
-		//Console.WriteLine(lista);
 		foreach (MemberInfo i in lista)
 		{
-			//Console.WriteLine
 			
 			if (i.MemberType==MemberTypes.Method)
             {
-				/*foreach ( ParameterInfo pi in ((MethodInfo) i).GetParameters() )
-				{
-				   s.WriteLine($"Parameter: Type={pi.ParameterType}, Name={pi.Name}");
-				}*/
-				s.WriteLine($"\nMetoda {i.Name}");
+				s.WriteLine($"1;Metoda;{i.Name};{objectType.GetMethod(i.Name).ReturnType}");
 				ParameterInfo[] lista2 = objectType.GetMethod(i.Name).GetParameters();
-				s.WriteLine("ListaParametrów");
 				foreach (ParameterInfo p in lista2)
-        {
-            s.Write(p.ParameterType+ ", ");
-        }
-				s.WriteLine('\n');
+				{
+					s.WriteLine("2;"+"parametr;"+p.ParameterType+";"+p.Name);
+				}
             } else {
-			s.WriteLine($"Nazwa\t{i.Name}");
-			s.WriteLine($"Typ\t{i.MemberType}");
+				
+				if (i.MemberType == MemberTypes.Field){
+			s.WriteLine($"1;{i.MemberType};{i.Name};{(((FieldInfo)i).GetValue(objekt)==null?null:((FieldInfo)i).GetValue(objekt).ToString())}");
+		}
+		
+		else if (i.MemberType == MemberTypes.Constructor)
+		
+		{
+			
+			s.WriteLine($"1;{i.MemberType};{i.Name}");
+				
+		}
+		
+		else 
+		
+		{
+			s.WriteLine("Cos innego");
+			}
 		}
 			
 			//https://learn.microsoft.com/pl-pl/dotnet/api/system.reflection.memberinfo?view=net-9.0
