@@ -37,14 +37,20 @@ class Programe{
                 Console.WriteLine("Public field not found.");
             }
 		
+		//referecje - wskazniki zrobic (has A) (1:1; 1:*; * : 1; * : *), dziedziczenie (is A) (powinno sie zapisac wszystko z rodzicow), 
+		
+		//dokumentacja/sprawozdanie -> Mooddle -> 
+		//opisy.
 		
 		Console.WriteLine("");
 		//saveasCSV(infoOPolu);
-		saveasCSV(a);
+		//saveasCSV(a);
 		Console.WriteLine("");
 		Console.WriteLine("");
 		Console.WriteLine("");
 		Telefon t = new Telefon();
+		
+		saveasCSV(t);
 	}
 
 
@@ -86,7 +92,7 @@ class Programe{
 		
 	};
 
-	public class Telefon 
+	public class Telefon : KsiazkaAdr
 	{
 		private KsiazkaAdr p = new KsiazkaAdr();
 		
@@ -94,6 +100,7 @@ class Programe{
 		{
 			Kontakt t = new Kontakt("Seba","Nie seba","4343");
 			p.dodaj(t);
+			saveasCSV(p);
 		}
 		
 	};
@@ -101,40 +108,46 @@ class Programe{
 	public static void saveasCSV<T>(T objekt)
 	{
 		Console.WriteLine("Zapis się wykonuje. Save As CSV");
-		StreamWriter s = new StreamWriter("klasa.csv", false);
+		StreamWriter s = new StreamWriter("klasa.csv", true);
 		
 		Type objectType = objekt.GetType();
-		s.WriteLine("0;"+objectType+objectType.Name);
+		s.WriteLine("\n\n1;"+objectType+";"+objectType.Name);
 		MemberInfo[] lista = objectType.GetMembers();
+		s.WriteLine("-0;"+objectType.BaseType.Name);
+		if(objectType.BaseType.Name!=null&&objectType.BaseType.Name!="Object")
+		{
+			Console.WriteLine("TypBazowej: "+objectType.BaseType.Name);
+			//saveasCSV(objectType.BaseType);
+		}
 		foreach (MemberInfo i in lista)
 		{
 			
 			if (i.MemberType==MemberTypes.Method)
             {
-				s.WriteLine($"1;Metoda;{i.Name};{objectType.GetMethod(i.Name).ReturnType}");
+				s.WriteLine($"2;Metoda;{i.Name};{objectType.GetMethod(i.Name).ReturnType}");
 				ParameterInfo[] lista2 = objectType.GetMethod(i.Name).GetParameters();
 				foreach (ParameterInfo p in lista2)
 				{
-					s.WriteLine("2;"+"parametr;"+p.ParameterType+";"+p.Name);
+					s.WriteLine("3;"+"parametr;"+p.ParameterType+";"+p.Name);
 				}
             } else {
 				
 				if (i.MemberType == MemberTypes.Field){
-			s.WriteLine($"1;{i.MemberType};{i.Name};{(((FieldInfo)i).GetValue(objekt)==null?null:((FieldInfo)i).GetValue(objekt).ToString())}");
+			s.WriteLine($"2;{i.MemberType};{i.Name};{(((FieldInfo)i).GetValue(objekt)==null?null:((FieldInfo)i).GetValue(objekt).ToString())}");
 		}
 		
 		else if (i.MemberType == MemberTypes.Constructor)
 		
 		{
 			
-			s.WriteLine($"1;{i.MemberType};{i.Name}");
+			s.WriteLine($"2;{i.MemberType};{i.Name}");
 				
 		}
 		
 		else 
 		
 		{
-			s.WriteLine("Cos innego");
+			s.WriteLine("-1;Cos_innego");
 			}
 		}
 			
